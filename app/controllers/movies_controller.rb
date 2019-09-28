@@ -15,7 +15,29 @@ class MoviesController < ApplicationController
       @sorting = params[:sort]
       # sort using model method
     end
-    @movies = Movie.order(@sorting)
+    # access ratings from model Movie
+    @all_ratings = Movie.all_ratings
+
+    if params[:ratings]
+      @ratings = params[:ratings].keys
+    else
+      @all_ratings.each do |rat|
+        (@ratings ||= { })[rat] = 1
+      end
+    end
+
+
+    # #  access checked item
+    # if session[:ratings]
+    #   @checked_ratings = session[:ratings].keys
+    # elsif
+    #   @checked_ratings = @all_ratings
+    # end
+    if params[:ratings]
+      @movies = Movie.order(@sorting).where(rating: @ratings)
+    else
+      @movies = Movie.order(@sorting).where(rating: @all_ratings)
+    end 
   end
 
   def new
